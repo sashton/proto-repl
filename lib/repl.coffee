@@ -64,7 +64,6 @@ class Repl
     @replView.onDidClose =>
       try
         @process?.stop(@session)
-        @replView = null
         @emitter.emit 'proto-repl-repl:close'
       catch error
         console.log("Warning error while closing: " + error)
@@ -104,6 +103,9 @@ class Repl
         messageHandler: (msg)=> @handleConnectionMessage(msg)
         startCallback: => @handleReplStarted()
         stopCallback: => @handleReplStopped()
+
+  show: () ->
+    @replView.show()
 
   # Starts nRepl connection
   # * `options` An {Object} with following keys
