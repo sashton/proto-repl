@@ -32,26 +32,30 @@ class ReplTextEditor
 
   constructor: ()->
     @emitter = new Emitter
-    if atom.config.get("proto-repl.openReplInRightPane")
-      options = {split: 'right'}
-    else
-      options = {}
-      # Opens the text editor that will represent the REPL.
-    atom.workspace.open(TAB_TITLE, options).then((textEditor) =>
-      window.textEditor = textEditor
-      @configureNewTextEditor(textEditor)
-      @emitter.emit 'proto-repl-text-editor:open'
 
-      @replHistory = new ReplHistory()
-      # Connect together repl text editor and history
-      @onHistoryBack =>
-        @replHistory.setCurrentText(@enteredText())
-        @setEnteredText(@replHistory.back())
+    @replHistory = new ReplHistory()
+    # Connect together repl text editor and history
+    @onHistoryBack =>
+      @replHistory.setCurrentText(@enteredText())
+      @setEnteredText(@replHistory.back())
 
-      @onHistoryForward =>
-        @replHistory.setCurrentText(@enteredText())
-        @setEnteredText(@replHistory.forward())
-    ).catch((err) => console.error(err))
+    @onHistoryForward =>
+      @replHistory.setCurrentText(@enteredText())
+      @setEnteredText(@replHistory.forward())
+
+  show: () ->
+    if not @textEditor?
+      if atom.config.get("proto-repl.openReplInRightPane")
+        options = {split: 'right'}
+      else
+        options = {}
+        # Opens the text editor that will represent the REPL.
+      atom.workspace.open(TAB_TITLE, options).then((textEditor) =>
+        window.textEditor = textEditor
+        @configureNewTextEditor(textEditor)
+        @emitter.emit 'proto-repl-text-editor:open'
+
+      ).catch((err) => console.error(err))
 
 
   # Calls the callback after the text editor has been opened.

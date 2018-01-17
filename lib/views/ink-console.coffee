@@ -31,17 +31,17 @@ class InkConsole
     TAB_TITLE = 'Proto-REPL'
     @console.getTitle = () -> TAB_TITLE
     @console.emitter.emit('did-change-title', TAB_TITLE)
-    # activate and open the console
-    @console.activate()
     @console.onEval (ed) => @executeEnteredText ed
     # set console modes
     @console.setModes([
       {name: 'proto-repl', default: true, grammar: 'source.clojure'}
     ])
     @console.destroy = =>
+      @clear()
       @emitter.emit 'proto-repl-ink-console:close'
-      @console = null
 
+
+  show: () ->
     atom.workspace.open(CONSOLE_URI,
       {
         split: 'right',

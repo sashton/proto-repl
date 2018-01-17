@@ -114,6 +114,9 @@ module.exports = ProtoRepl =
     @saveRecallFeature = new SaveRecallFeature(this)
     @extensionsFeature = new ExtensionsFeature(this)
 
+    @repl = new Repl(@extensionsFeature)
+    @prepareRepl(@repl)
+
     # Register commands
     @subscriptions.add atom.commands.add 'atom-workspace',
       'proto-repl:toggle': => @toggle()
@@ -214,18 +217,11 @@ module.exports = ProtoRepl =
 
   # Starts the REPL if it's not currently running.
   toggle: (projectPath=null)->
-    if @repl == null
-      @repl = new Repl(@extensionsFeature)
-      @prepareRepl(@repl)
-      @repl.startProcessIfNotRunning(projectPath)
-    else
-      # REPL already running
-      @repl.startProcessIfNotRunning(projectPath)
+    @repl?.show()
+    @repl?.startProcessIfNotRunning(projectPath)
 
   prepareRepl: (repl)->
-    repl.consumeInk(@ink)
     repl.onDidClose =>
-      @repl = null
       @emitter.emit('proto-repl:closed')
     repl.onDidStart =>
       @emitter.emit('proto-repl:connected')
